@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 type Anniversary struct {
@@ -44,15 +45,16 @@ func Search(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
 	var anniversaries []Anniversary
 	json.Unmarshal(body, &anniversaries)
 
-	fmt.Fprintln(w, string(body))
+	//fmt.Fprintln(w, string(body))
 
-	fmt.Fprintln(w, "hogehoge")
+	responseString := string(body)
+	punctuateMonthly := regexp.MustCompile(`(\d{1,2})日\s-\s(.+日|.+デー)`)
 
+	punctuatedByMonth := punctuateMonthly.FindAllString(responseString, 400)
 
-	for _, p := range anniversaries {
-		fmt.Fprintln(w, p.Query.Pages.Id.Extract)
+	for s1, s2 := range punctuatedByMonth {
+		fmt.Fprintln(w, s1+1, s2)
 	}
-
 }
 
 func main() {
